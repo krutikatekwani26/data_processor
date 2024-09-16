@@ -1,0 +1,8 @@
+# Ignore Excel files
+data_processor\Current Labor Rate Database (Projects).xlsx
+
+# Ignore schema.yaml
+data_processor\schema.yaml
+
+# Ignore CSV files
+data_processor\check_data.csv
