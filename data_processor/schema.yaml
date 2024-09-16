@@ -1,0 +1,214 @@
+COLUMNS:
+  BASE:
+    type: float64
+  BILL RATE:
+    type: float64
+  BUILDING TYPE:
+    type: object
+  CITY:
+    type: object
+  CONTRACTOR:
+    type: object
+  CONTRACTOR TYPE:
+    type: object
+  DATE:
+    type: datetime64
+  FICA:
+    type: float64
+  FUTA:
+    type: float64
+  FIELD:
+    type: object
+  FRINGE BENEFITS:
+    type: float64
+  G&A (OH):
+    type: float64
+  GROUP:
+    type: object
+  LABOR TYPE:
+    type: object
+  LEVEL:
+    type: object
+  LIABILITY INS:
+    type: float64
+  OT:
+    type: float64
+  OWNER:
+    type: object
+  POSITION:
+    type: object
+  PROFIT:
+    type: float64
+  SUTA:
+    type: float64
+  SMALL TOOLS:
+    type: float64
+  STATE:
+    type: object
+  TAX/INS:
+    type: float64
+  TIME:
+    type: object
+  TYPE:
+    type: object
+  UNION NUMBER:
+    type: object
+  WAGE TYPE:
+    type: object
+  WORK COMP:
+    type: float64
+  PER DIEM:
+    type: float64
+
+POSITION:
+ - 'ACCOUNT MANAGER'
+ - 'ACCOUNTANT'
+ - 'ADMIN'
+ - 'ASBESTOS-INSULATION-PIPE COVERERS'
+ - 'BILLING'
+ - 'BIM'
+ - 'BOILERMAKERS'
+ - 'BRICKLAYERS'
+ - 'CAD'
+ - 'CARPENTERS'
+ - 'CARPET AND LINOLEUM LAYERS'
+ - 'CEMENT MASON'
+ - 'COMMISSIONING'
+ - 'CONSTRUCTION MANAGER'
+ - 'CONTRACTS'
+ - 'CONTROLS'
+ - 'DESIGN'
+ - 'ELECTRICIANS'
+ - 'ELEVATOR MECHANIC'
+ - 'ENGINEER'
+ - 'EQUIPMENT OPERATOR-CRANE'
+ - 'ESTIMATOR'
+ - 'FOOD SERVICE'
+ - 'GLAZIERS'
+ - 'HR'
+ - 'INTERN'
+ - 'IRONWORKER'
+ - 'IT AND SOFTWARE'
+ - 'LABORER'
+ - 'LIGHT EQUIPMENT OPERATOR'
+ - 'MANAGER'
+ - 'MED EQUIPMENT OPERATOR'
+ - 'MILLWRIGHTS'
+ - 'OFFICE MANAGER'
+ - 'OPERATIONS MANAGER'
+ - 'PAINTER'
+ - 'PILE DRIVERS'
+ - 'PLUMBERS-PIPEFITTERS-STEAMFITTERS-SPRINKLER INSTALLERS'
+ - 'PRECONSTRUCTION'
+ - 'PRGRAM COORDINATOR'
+ - 'PROCUREMENT MANAGER'
+ - 'PROGRAM DIRECTOR'
+ - 'PROGRAM MANAGER'
+ - 'PROJECT COORDINATOR'
+ - 'PROJECT DIRECTOR'
+ - 'PROJECT EXECUTIVE'
+ - 'PROJECT MANAGER'
+ - 'PURCHASING'
+ - 'QC'
+ - 'RIGGING'
+ - 'ROOFER'
+ - 'SAFETY'
+ - 'SCHEDULER'
+ - 'SECRETARY'
+ - 'SHEET METAL WORKERS'
+ - 'SITE UTILITIES'
+ - 'SITEWORK'
+ - 'SUPERINTENDENT'
+ - 'SUPPORT'
+ - 'SURVEYOR'
+ - 'SUSTAINABILITY'
+ - 'TEAMSTER'
+ - 'TILE LAYERS'
+ - 'WINDOW COVERINGS'
+ - 'ANALYST'
+ - 'MEDICAL'
+ - 'GIS'
+ - 'PROCUREMENT'
+ - 'TECH'
+ - 'COORDINATOR'
+
+GROUP:
+ - '3-JOURNEY'
+ - '1-GENERAL FOREMAN'
+ - '2-FOREMAN'
+ - '4-APPRENTICE'
+ - 'HELPER'
+ - 'ADMINISTRATIVE'
+ - 'CE1'
+ - 'CE2'
+ - 'CE3'
+ - 'CW1'
+ - 'CW2'
+ - 'CW3'
+ - 'CW4'
+ - 'CREW'
+ - 'PRE-APPRENTICE'
+ - 'I'
+ - 'II'
+ - 'III'
+ - 'IV'
+ - 'V'
+ - 'VI'
+ - 'VII'
+ - 'VIII'
+
+CONTRACTOR TYPE:
+ - 'GC/CM'
+ - 'SUB'
+ - 'OWNER TEAM'
+
+LABOR TYPE:
+ - 'GC PM'
+ - 'UNKNOWN'
+ - 'UNION'
+ - 'OWNER PM'
+ - 'OPEN SHOP'
+ - 'SHOP'
+
+WAGE TYPE:
+ - 'BURDENED'
+ - 'NON-BURDENED'
+
+BUILDING TYPE:
+ - 'DATA CENTER'
+ - 'SEMICONDUCTOR'
+ - 'MULTIFAMILY'
+ - 'MANUFACTURING-F&B'
+ - 'OFFICE-COMMERCIAL'
+ - 'LAB/RESEARCH'
+ - 'MANUFACTURING'
+ - 'MANUFACTURING-PHARMA'
+ - 'MANUFACTURING-AUTOMOTIVE'
+ - 'AVIATION'
+ - 'RETAIL'
+ - 'OFFICE-PHARMA'
+ - 'HOSPITALITY'
+ - 'STADIUMS'
+ - 'UNKNOWN'
+ - 'OTHER'
+ - 'GOVERNMENT'
+
+TYPE:
+ - 'SUPERVISION'
+ - 'TRADE'
+
+HASH:
+ - 'POSITION'
+ - 'GROUP'
+ - 'LEVEL'
+ - 'FIELD'
+ - 'CONTRACTOR'
+ - 'OWNER'
+ - 'CITY'
+ - 'STATE'
+ - 'TYPE'
+ - 'DATE'
+ - 'TIME'
+
+
+
