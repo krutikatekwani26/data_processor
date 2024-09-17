@@ -1,40 +1,29 @@
-# This is a placeholder file
-from data_processor.core.dataset import Dataset
-from data_processor.core.schema import Schema
-from data_processor.processors.processor_a import ProcessorA
-from data_processor.operations.formatting import *
 import pandas as pd
+from data_processor.core.dataset import Dataset
+from data_processor.processors.processor_a import ProcessorA
+from data_processor.utils.helpers import *
 
+# Load dataset and schema
+dataset_path = 'data_processor\supervison_data.xlsx'
+schema_path = 'data_processor/schema.yaml'
 
-dataset_path = 'data_processor\Current Labor Rate Database (Projects).xlsx'
-schema_path = 'data_processor\schema.yaml'
-
-# Load dataset
 data = pd.read_excel(dataset_path)
 
-# Load schema
-schema = Schema(schema_path)
 
-# Create Dataset object (no validation initially)
-dataset1 = Dataset(data, schema)
+# Create Dataset object
+dataset = Dataset(data)
 
-
-
-# Create processor
+# Create ProcessorA object and add operations (no need for ApplyFunction, BaseProcessor does that)
 processor = ProcessorA()
-
-# Add operations
-processor.add_operation(StringUppercase())
-processor.add_operation(CleanPunctuationSpacing())
-processor.add_operation(HyphenateSpecialCharacters())
-processor.add_operation(TrimWhiteSpaces())
-processor.add_operation(CleanNumericValues())
-
+processor.add_operation(remove_spaces_around_punctuation)
+processor.add_operation(make_uppercase)
+#processor.add_operation(trim_white_spaces)
+processor.add_operation(clean_numeric_values)
 
 # Process dataset
-
-result = processor.process(dataset1)
-result.validate()
-result.get_data().to_csv('data_processor\check_data.csv', index=False)
+result = processor.process(dataset)
 
 
+# Save the processed and validated data
+print(result.get_data().head())
+result.get_data().to_csv('data_processor/check_data.csv', index=False)

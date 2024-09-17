@@ -1,5 +1,5 @@
 # Ignore Excel files
-data_processor\Current Labor Rate Database (Projects).xlsx
+data_processor\supervision_data.xlsx
 
 # Ignore schema.yaml
 data_processor\schema.yaml

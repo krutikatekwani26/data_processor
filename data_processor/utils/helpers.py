@@ -1,4 +1,7 @@
 import pandas as pd
+from box import ConfigBox
+import yaml
+from box.exceptions import BoxValueError
 
 def make_uppercase(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -154,3 +157,44 @@ def validate_column_values(dataframe: pd.DataFrame, schema: dict):
     
     if invalid_data:
         raise ValueError("\n".join(invalid_data))
+    
+def read_yaml(path_to_yaml: str) -> ConfigBox:
+    """
+    Read the YAML file and return a ConfigBox object.
+    
+    This function reads a YAML file from the specified path and converts its content into a ConfigBox object,
+    which allows for attribute-style access to dictionary keys. The function ensures that the YAML content 
+    is properly formatted as a dictionary and handles various exceptions related to file reading and YAML parsing.
+    
+    :param path_to_yaml: The file path to the YAML file.
+    :return: A ConfigBox object containing the parsed YAML content.
+    :raises ValueError: If the YAML content is not a dictionary or if the YAML file is not properly formatted.
+    :raises BoxValueError: If the YAML content cannot be converted to a ConfigBox object.
+    :raises Exception: For any other unexpected errors.
+    """
+    try:
+        # Open and read the YAML file
+        with open(path_to_yaml, 'r') as file:
+            content = yaml.safe_load(file)
+
+            # Check if the content is a dictionary
+            if isinstance(content, dict):
+                
+                return ConfigBox(content)
+            else:
+                raise ValueError("YAML content is not a dictionary")
+
+    except yaml.YAMLError as e:
+        # Handle YAML parsing errors
+        print(f"An error occurred while parsing the YAML file: {e}")
+        raise ValueError("YAML file is not properly formatted")
+
+    except BoxValueError:
+        # Handle errors related to converting to ConfigBox
+        print("Cannot convert the YAML content to a Box object")
+        raise BoxValueError("Cannot convert the YAML content to a Box object")
+
+    except Exception as e:
+        # Handle any other unexpected errors
+        print(f"An unexpected error occurred: {e}")
+        raise e
