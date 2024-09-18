@@ -17,3 +17,10 @@ class Dataset:
     def set_data(self, data: pd.DataFrame):
         
         self.data = data
+
+    def get_schema(self) -> dict:
+        
+        return self.schema
+    
+    
+    

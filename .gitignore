@@ -14,3 +14,7 @@ data_processor/core/__pycache__/
 data_processor/processors/__pycache__/
 data_processor/utils/__pycache__/ 
 data_processor/operations/__pycache__/
+data_processor/operations/formatting/__pycache__/
+data_processor/operations/merging/__pycache__/
+data_processor/test/__pycache__/
+
