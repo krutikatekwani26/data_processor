@@ -6,3 +6,11 @@ data_processor\schema.yaml
 
 # Ignore CSV files
 data_processor\check_data.csv
+
+**/__pycache__/
+
+data_processor/__pycache__
+data_processor/core/__pycache__/ 
+data_processor/processors/__pycache__/
+data_processor/utils/__pycache__/ 
+data_processor/operations/__pycache__/

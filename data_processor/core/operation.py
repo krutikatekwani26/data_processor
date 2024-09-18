@@ -5,5 +5,5 @@ from .dataset import Dataset
 
 class Operation(ABC):
     @abstractmethod
-    def apply(self, dataset: Dataset) -> Dataset:
+    def apply(self, dataset: Dataset) -> Dataset|None:
         pass
