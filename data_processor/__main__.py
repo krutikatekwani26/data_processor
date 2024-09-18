@@ -13,7 +13,7 @@ data = pd.read_excel(dataset_path)
 
 
 # Create Dataset object
-dataset = Dataset(data, schema_path)
+dataset = Dataset(data)
 
 
 cleaning_processor = DataCleaningProcessor()
@@ -24,6 +24,7 @@ cleaning_processor.add_operation(RemoveSpacesAroundPunctuation())
 cleaning_processor.add_operation(ManageSpecialCharacters())
 cleaning_processor.add_operation(StripLeadingAndTrailingSpaces())
 cleaning_processor.add_operation(CleanNumericValues())
+cleaning_processor.add_operation(RemoveDuplicates())
 
 validation_processor.add_operation(DropInvalidColumns())
 validation_processor.add_operation(ValidateColumnValues())

@@ -99,7 +99,7 @@ class ManageSpecialCharacters(CleaningOperation):
     This class performs the operation on the provided DataFrame.
     """
 
-    def __call__(self, dataframe: pd.DataFrame, schema=None) -> pd.DataFrame:
+    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Apply the transformation to replace spaces around commas, semicolons, and colons with hyphens.
         
@@ -128,7 +128,7 @@ class StripLeadingAndTrailingSpaces(CleaningOperation):
     Strips trailing and leading spaces from column names and categorical string values across the entire DataFrame.
     """
 
-    def __call__(self, dataframe: pd.DataFrame, schema=None) -> pd.DataFrame:
+    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Apply the transformation to strip spaces from column names and string values.
         
@@ -155,7 +155,7 @@ class CleanNumericValues(CleaningOperation):
     This class handles cases where strings contain dollar signs and converts them to float values.
     """
 
-    def __call__(self, dataframe: pd.DataFrame, schema=None) -> pd.DataFrame:
+    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Apply the transformation to clean numeric values in the DataFrame.
         
@@ -174,6 +174,29 @@ class CleanNumericValues(CleaningOperation):
         )
 
         return _df
+    
+class RemoveDuplicates(CleaningOperation):
+    """
+    A class to remove duplicate rows from a DataFrame.
+    
+    """
+
+    def __call__(self, dataframe: pd.DataFrame, subset=None, keep='first') -> pd.DataFrame:
+        
+        # Identify duplicates
+        duplicate_mask = dataframe.duplicated(subset=subset, keep=keep)
+        
+        # Extract the rows that will be dropped
+        dropped_rows = dataframe[duplicate_mask]
+        
+        # Print the rows that are being dropped
+        if not dropped_rows.empty:
+            print(f"The following duplicate rows were dropped:\n{dropped_rows}\n")
+        
+        
+        # Remove duplicates using Pandas' drop_duplicates function
+        return dataframe.drop_duplicates(subset=subset, keep=keep)
+
 
 
 
