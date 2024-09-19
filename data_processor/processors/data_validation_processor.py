@@ -3,6 +3,9 @@ from ..core.dataset import Dataset
 from ..utils.helpers import operation_type_check,ValidationOperation
 
 
+class SchemaNotProvidedError(Exception):
+    pass
+
 class DataValidationProcessor(BaseProcessor):
 
     @operation_type_check(ValidationOperation)
@@ -15,8 +18,7 @@ class DataValidationProcessor(BaseProcessor):
         
         """
         if dataset.get_schema() is None:
-            print("Schema required to validate the data against. Please provide a schema.")
-            return dataset
+            raise SchemaNotProvidedError("Schema required to validate the data against. Please provide a schema.")
 
         for operation in self.operations:
             dataset = operation(dataset)
