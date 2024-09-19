@@ -17,9 +17,15 @@ class CustomProcessor(BaseProcessor):
         Process the dataset by applying all custom operations sequentially.
         """
         df = dataset.get_data()
+        schema = dataset.get_schema()
 
         for operation in self.operations:
-            df = operation(df)
+            try:
+                
+                df = operation(df, schema)
+            except TypeError:
+                
+                df = operation(df)
         
         dataset.set_data(df)
         return dataset

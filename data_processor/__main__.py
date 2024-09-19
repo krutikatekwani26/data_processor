@@ -28,6 +28,27 @@ def make_uppercase(df: pd.DataFrame) -> pd.DataFrame:
     # Return the modified DataFrame
     return _df
 
+def drop_invalid_columns(dataframe, schema):
+        """
+        Drops columns from the DataFrame that are not present in the schema.yaml file
+        and prints the dropped columns.
+        
+        Returns:
+        pd.DataFrame: The DataFrame with only valid columns according to the schema.
+        """
+        schema_columns = schema['COLUMNS'].keys()  # Get valid columns from the schema
+        columns_to_drop = [col for col in dataframe.columns if col not in schema_columns]
+        
+        # Print the columns that are being dropped
+        if columns_to_drop:
+            print(f"Columns dropped: {', '.join(columns_to_drop)}")
+        else:
+            print("No columns were dropped. All columns are valid.")
+
+        # Drop columns that are not in the schema
+        dataframe = dataframe.drop(columns=columns_to_drop)
+        
+        return dataframe
 
 
 # Create Dataset object
@@ -39,6 +60,7 @@ validation_processor = DataValidationProcessor()
 custom = CustomProcessor()
 
 custom.add_operation(make_uppercase)
+custom.add_operation(drop_invalid_columns)
 
 #cleaning_processor.add_operation(MakeUppercase())
 #cleaning_processor.add_operation(RemoveSpacesAroundPunctuation())
@@ -47,7 +69,7 @@ custom.add_operation(make_uppercase)
 #cleaning_processor.add_operation(CleanNumericValues())
 #cleaning_processor.add_operation(RemoveDuplicates())
 
-validation_processor.add_operation(DropInvalidColumns())
+#validation_processor.add_operation(DropInvalidColumns())
 #validation_processor.add_operation(ValidateColumnValues())
 
 
@@ -62,5 +84,5 @@ validated_dataset = validation_processor.process(dataset)
 
 
 # Save the processed and validated data
-print(validated_dataset.get_data().head())
+print(custom_dataset.get_data().head())
 #result.get_data().to_csv('data_processor/check_data.csv', index=False)
