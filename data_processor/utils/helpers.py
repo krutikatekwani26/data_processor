@@ -90,6 +90,8 @@ class RemoveSpacesAroundPunctuation(CleaningOperation):
                 _df[col] = _df[col].str.replace(r'(\s*:\s*)', ':', regex=True)
                 # Remove spaces around hyphens
                 _df[col] = _df[col].str.replace(r'(\s*-\s*)', '-', regex=True)
+                _df[col] = _df[col].str.replace(r'(\s*!\s*)', '!', regex=True)
+                _df[col] = _df[col].str.replace(r'(\s*;\s*)', ';', regex=True)
 
         # Return the modified DataFrame
         return _df
@@ -119,7 +121,7 @@ class ManageSpecialCharacters(CleaningOperation):
             # Check if the column's data type is object (string)
             if _df[col].dtype == 'object':
                 # Replace spaces around commas, semicolons, and colons with hyphens
-                _df[col] = _df[col].str.replace(r'\s*[,;:]\s*', '-', regex=True)
+                _df[col] = _df[col].str.replace(r'\s*[,;:!-]\s*', '-', regex=True)
 
         # Return the modified DataFrame
         return _df
@@ -171,7 +173,7 @@ class CleanNumericValues(CleaningOperation):
         _df = dataframe.copy()
 
         # Clean numeric values by handling dollar signs and converting strings to floats
-        _df = _df.applymap(
+        _df = _df.map(
             lambda x: float(x.replace('$', '')) if isinstance(x, str) and x.startswith('$')
             else (float(x) if isinstance(x, str) and x.replace('.', '', 1).isdigit() else x)
         )
