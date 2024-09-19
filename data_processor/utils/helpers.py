@@ -10,6 +10,9 @@ class CleaningOperation:
 class ValidationOperation:
    
     pass
+
+class SchemaNotProvidedError(Exception):
+    pass
     
 
 def operation_type_check(allowed_type):

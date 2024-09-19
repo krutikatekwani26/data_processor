@@ -1,10 +1,9 @@
 from ..core.base_processor import BaseProcessor
 from ..core.dataset import Dataset
-from ..utils.helpers import operation_type_check,ValidationOperation
+from ..utils.helpers import operation_type_check,ValidationOperation,SchemaNotProvidedError
 
 
-class SchemaNotProvidedError(Exception):
-    pass
+
 
 class DataValidationProcessor(BaseProcessor):
 

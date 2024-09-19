@@ -1,5 +1,5 @@
 # Ignore Excel files
-data_processor\supervision_data.xlsx
+data_processor\supervison_data.xlsx
 
 # Ignore schema.yaml
 data_processor\schema.yaml
@@ -7,7 +7,7 @@ data_processor\schema.yaml
 # Ignore CSV files
 data_processor\check_data.csv
 
-**/__pycache__/
+
 
 data_processor/__pycache__
 data_processor/core/__pycache__/ 

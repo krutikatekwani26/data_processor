@@ -23,4 +23,4 @@ class ApplyFunction(Operation):
         return dataset
     
     def __call__(self, dataset):
-        return self.apply(dataset)
+         return self.apply(dataset)
