@@ -1,6 +1,6 @@
 from ..core.base_processor import BaseProcessor
 from ..core.dataset import Dataset
-from ..utils.helpers import operation_type_check
+from ..utils.helpers import operation_type_check,get_operation_list
 from ..operations.formatting.apply_function import ApplyFunction
 
 
@@ -29,6 +29,10 @@ class DataCleaningProcessor(BaseProcessor):
         
         
         return dataset
+    
+    def get_operation_list(self):
+        
+        return get_operation_list('cleaning')
     
     
     

@@ -2,7 +2,7 @@ import pandas as pd
 from data_processor.core.dataset import Dataset
 from data_processor.processors.data_cleaning_processor import DataCleaningProcessor
 from data_processor.processors.data_validation_processor import DataValidationProcessor
-from data_processor.processors.custom_processor import CustomProcessor
+
 
 from data_processor.utils.helpers import *
 
@@ -46,6 +46,10 @@ validation_processor = DataValidationProcessor()
 #custom = CustomProcessor()
 
 
+print(cleaning_processor.get_operation_list())
+print(validation_processor.get_operation_list())
+
+cleaning_processor.add_custom_operation(strip_leading_and_trailing_spaces)
 
 
 

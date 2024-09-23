@@ -5,6 +5,7 @@ from box.exceptions import BoxValueError
 from functools import wraps
 import inspect
 import sys
+from typing import List
 
 def mark_as_cleaning_operation(func):
     """
@@ -279,6 +280,16 @@ def read_yaml(path_to_yaml: str) -> ConfigBox:
         # Handle any other unexpected errors
         print(f"An unexpected error occurred: {e}")
         raise e
+    
+def get_operation_list(operation_type: str) -> List[str]:
+    
+    attr = {'cleaning': '_is_cleaning_operation', 'validation': '_is_validation_operation'}.get(operation_type)
+    
+    if not attr:
+        raise ValueError("Invalid operation type. Use 'cleaning' or 'validation'.")
+    
+    return [name for name, obj in inspect.getmembers(sys.modules[__name__]) 
+            if inspect.isfunction(obj) and getattr(obj, attr, False)]
     
 
 
