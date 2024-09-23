@@ -3,39 +3,62 @@ from box import ConfigBox
 import yaml
 from box.exceptions import BoxValueError
 from functools import wraps
+import inspect
+import sys
 
-class CleaningOperation:
-    pass
+def mark_as_cleaning_operation(func):
+    """
+    Decorator to mark a function as a cleaning operation.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    
+    # Mark the function as a cleaning operation
+    wrapper._is_cleaning_operation = True
+    return wrapper
 
-class ValidationOperation:
-   
-    pass
+def mark_as_validation_operation(func):
+    """
+    Decorator to mark a function as a validation operation.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    
+    # Mark the function as a validation operation
+    wrapper._is_validation_operation = True
+    return wrapper
 
 class SchemaNotProvidedError(Exception):
     pass
     
 
-def operation_type_check(allowed_type):
+
+
+def operation_type_check(operation_type):
     """
-    Decorator to ensure the operation being added is of the allowed type.
+    Decorator to ensure the operation being added has been marked with the correct type (cleaning or validation).
+    
+    :param operation_type: A string representing the type of operation ('cleaning' or 'validation').
     """
     def decorator(func):
         @wraps(func)
         def wrapper(self, operation):
-            # Now we're using isinstance() to check if the operation is the correct type
-            if not isinstance(operation, allowed_type):
-                raise TypeError(f"Operation must be of type {allowed_type.__name__}")
+            # Build the attribute name dynamically
+            expected_attr = f"_is_{operation_type}_operation"
+            
+            # Check if the operation has the expected attribute
+            if not getattr(operation, expected_attr, False):
+                raise TypeError(f"Operation must be of type {operation_type}.")
+            
             return func(self, operation)
         return wrapper
     return decorator
 
-class MakeUppercase(CleaningOperation):
-    """
-    Convert string columns and column names to uppercase.
-    This class performs the operation on the provided DataFrame.
-    """
 
-    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+@mark_as_cleaning_operation
+def make_uppercase( dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Apply the uppercase transformation to the DataFrame.
         
@@ -62,13 +85,9 @@ class MakeUppercase(CleaningOperation):
 
 
 
-class RemoveSpacesAroundPunctuation(CleaningOperation):
-    """
-    Remove spaces around specific punctuation marks in string columns of a DataFrame.
-    This class performs the operation on the provided DataFrame.
-    """
 
-    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+@mark_as_cleaning_operation
+def remove_spaces_Around_punctuation(dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Apply the transformation to remove spaces around commas, colons, and hyphens.
         
@@ -96,15 +115,25 @@ class RemoveSpacesAroundPunctuation(CleaningOperation):
         # Return the modified DataFrame
         return _df
 
+@mark_as_validation_operation
+def drop_invalid_columns(dataframe, schema):
+        """
+        Drops columns from the DataFrame that are not present in the schema.yaml file
+        and prints the dropped columns.
+        """
+        schema_columns = schema['COLUMNS'].keys()
+        columns_to_drop = [col for col in dataframe.columns if col not in schema_columns]
+        
+        if columns_to_drop:
+            print(f"Columns dropped: {', '.join(columns_to_drop)}")
+        else:
+            print("No columns were dropped. All columns are valid.")
+    
+        return dataframe.drop(columns=columns_to_drop)
 
 
-class ManageSpecialCharacters(CleaningOperation):
-    """
-    Replace spaces around specific special characters in string columns with hyphens.
-    This class performs the operation on the provided DataFrame.
-    """
-
-    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+@mark_as_cleaning_operation
+def manage_special_characters( dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Apply the transformation to replace spaces around commas, semicolons, and colons with hyphens.
         
@@ -128,39 +157,10 @@ class ManageSpecialCharacters(CleaningOperation):
 
 
 
-class StripLeadingAndTrailingSpaces(CleaningOperation):
-    """
-    Strips trailing and leading spaces from column names and categorical string values across the entire DataFrame.
-    """
 
-    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
-        """
-        Apply the transformation to strip spaces from column names and string values.
-        
-        :param dataframe: Input DataFrame to strip spaces from.
-        :param schema: Not used for this operation, included for compatibility.
-        :return: A DataFrame with stripped column names and values.
-        """
 
-        # Create a copy of the input DataFrame to avoid modifying the original
-        _df = dataframe.copy()
-
-        # Strip spaces from column names
-        _df.columns = _df.columns.str.strip()
-
-        # Strip spaces from string data in all categorical/object columns
-        for col in _df.select_dtypes(include=['object']).columns:
-            _df[col] = _df[col].apply(lambda x: x.strip() if isinstance(x, str) else x)
-
-        return _df
-
-class CleanNumericValues(CleaningOperation):
-    """
-    Clean and convert numeric values in a DataFrame.
-    This class handles cases where strings contain dollar signs and converts them to float values.
-    """
-
-    def __call__(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+@mark_as_cleaning_operation
+def clean_numeric_values( dataframe: pd.DataFrame) -> pd.DataFrame:
         """
         Apply the transformation to clean numeric values in the DataFrame.
         
@@ -179,14 +179,9 @@ class CleanNumericValues(CleaningOperation):
         )
 
         return _df
-    
-class RemoveDuplicates(CleaningOperation):
-    """
-    A class to remove duplicate rows from a DataFrame.
-    
-    """
 
-    def __call__(self, dataframe: pd.DataFrame, subset=None, keep='first') -> pd.DataFrame:
+@mark_as_cleaning_operation    
+def remove_duplicates(dataframe: pd.DataFrame, subset=None, keep='first') -> pd.DataFrame:
         
         # Identify duplicates
         duplicate_mask = dataframe.duplicated(subset=subset, keep=keep)
@@ -206,32 +201,11 @@ class RemoveDuplicates(CleaningOperation):
 
 
 
-class DropInvalidColumns(ValidationOperation):
-    def __call__(self, dataframe, schema):
-        """
-        Drops columns from the DataFrame that are not present in the schema.yaml file
-        and prints the dropped columns.
-        """
-        schema_columns = schema['COLUMNS'].keys()
-        columns_to_drop = [col for col in dataframe.columns if col not in schema_columns]
-        
-        if columns_to_drop:
-            print(f"Columns dropped: {', '.join(columns_to_drop)}")
-        else:
-            print("No columns were dropped. All columns are valid.")
-    
-        return dataframe.drop(columns=columns_to_drop)
 
 
 
-
-class ValidateColumnValues(ValidationOperation):
-    """
-    Validates the values in the DataFrame columns against the valid values specified in the schema.
-    This class performs validation and raises an error if invalid values are found.
-    """
-
-    def __call__(self, dataframe: pd.DataFrame, schema: dict) -> pd.DataFrame:
+@mark_as_validation_operation
+def validate_column_values( dataframe: pd.DataFrame, schema: dict) -> pd.DataFrame:
         """
         Apply the validation to the DataFrame based on the provided schema.
         
@@ -264,7 +238,7 @@ class ValidateColumnValues(ValidationOperation):
         return dataframe
 
 
-    
+  
 def read_yaml(path_to_yaml: str) -> ConfigBox:
     """
     Read the YAML file and return a ConfigBox object.
@@ -306,6 +280,7 @@ def read_yaml(path_to_yaml: str) -> ConfigBox:
         print(f"An unexpected error occurred: {e}")
         raise e
     
+
 
 
 

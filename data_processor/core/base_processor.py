@@ -14,6 +14,14 @@ class BaseProcessor(ABC):
         self.operations.append(ApplyFunction(func))
 
     @abstractmethod
+    def add_custom_operation(self, operation):
+        """
+        Allows the user to add custom operations that do not need to pass through the
+        operation type check.
+        """
+        self.operations.append(operation)
+
+    @abstractmethod
     def process(self, dataset: Dataset) -> Dataset:
         """
         Process the dataset by applying all operations sequentially.
