@@ -22,9 +22,16 @@ data_processor/
 │   ├── __init__.py             # Handles merging operations
 │
 ├── processors/
-│   ├── processorA.py           # Subclass of base_processor
+│   ├── DataCleaningProcessor.py         # Subclass of base_processor
+|   |-- DataValidationProcessor.py
 │   ├── __init__.py
 │
 ├── utils/
 │   ├── __init__.py
-│   ├── helper.py               # All the necessary helper functions
+│   ├── helper.py
+|   |-- exceptions.py
+|
+|-- Tests/-
+|   |-- util_tests.py
+|   |-- processor_tests.py
+|        
