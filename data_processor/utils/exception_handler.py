@@ -6,29 +6,31 @@ class ExceptionHandler:
     """
 
     def handle(self, operation, error: Exception):
+
+        operation_name = type(operation).__name__
         
         if isinstance(error, KeyError):
-            print(f"KeyError in '{operation.__name__}': Column not found in the DataFrame.")
+            print(f"KeyError in '{operation_name}': Column not found in the DataFrame.")
         elif isinstance(error, TypeError):
-            print(f"TypeError in '{operation.__name__}': Incompatible types for the operation.")
+            print(f"TypeError in '{operation_name}': Incompatible types for the operation.")
         elif isinstance(error, ValueError):
-            print(f"ValueError in '{operation.__name__}': Invalid values found.")
+            print(f"ValueError in '{operation_name}': Invalid values found.")
         elif isinstance(error, IndexError):
-            print(f"IndexError in '{operation.__name__}': Index out of bounds.")
+            print(f"IndexError in '{operation_name}': Index out of bounds.")
         elif isinstance(error, AttributeError):
-            print(f"AttributeError in '{operation.__name__}': Invalid attribute or method for this object.")
+            print(f"AttributeError in '{operation_name}': Invalid attribute or method for this object.")
         elif isinstance(error, pd.errors.EmptyDataError):
-            print(f"EmptyDataError in '{operation.__name__}': No data found in the DataFrame.")
+            print(f"EmptyDataError in '{operation_name}': No data found in the DataFrame.")
         elif isinstance(error, pd.errors.ParserError):
-            print(f"ParserError in '{operation.__name__}': Error while parsing the DataFrame.")
+            print(f"ParserError in '{operation_name}': Error while parsing the DataFrame.")
         elif isinstance(error, pd.errors.MultiIndexKeyError):
-            print(f"MultiIndexKeyError in '{operation.__name__}': Issue with accessing MultiIndex in DataFrame.")
+            print(f"MultiIndexKeyError in '{operation_name}': Issue with accessing MultiIndex in DataFrame.")
         elif isinstance(error, pd.errors.IndexingError):
-            print(f"IndexingError in '{operation.__name__}': Invalid indexing operation on DataFrame.")
+            print(f"IndexingError in '{operation_name}': Invalid indexing operation on DataFrame.")
         elif isinstance(error, pd.errors.MergeError):
-            print(f"MergeError in '{operation.__name__}': Invalid merge operation attempted on DataFrame.")
+            print(f"MergeError in '{operation_name}': Invalid merge operation attempted on DataFrame.")
         elif isinstance(error, pd.errors.ParserWarning):
-            print(f"ParserWarning in '{operation.__name__}': Issue while parsing the file.")
+            print(f"ParserWarning in '{operation_name}': Issue while parsing the file.")
         elif isinstance(error, FileNotFoundError):
             print(f"FileNotFoundError: The specified file was not found.")
         elif isinstance(error, PermissionError):
@@ -50,4 +52,4 @@ class ExceptionHandler:
         elif isinstance(error, ImportError):
             print(f"ImportError: Failed to import a required module.")
         else:
-            print(f"Unexpected error in '{operation.__name__}': {str(error)}")
+            print(f"Unexpected error in '{operation_name}': {str(error)}")

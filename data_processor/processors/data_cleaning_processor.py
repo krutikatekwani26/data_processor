@@ -11,8 +11,9 @@ class DataCleaningProcessor(BaseProcessor):
         self.exception_handler = ExceptionHandler() 
 
     @operation_type_check('cleaning')
-    def add_operation(self, operation):
-        super().add_operation(operation)
+    def add_operation(self, func):
+        wrapped_operation = ApplyFunction(func)
+        super().add_operation(wrapped_operation)
 
     def add_custom_operation(self, operation):
         return super().add_custom_operation(operation)

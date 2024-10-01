@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from data_processor.core.dataset import Dataset
-from ..operations.formatting.apply_function import ApplyFunction
+
 
 class BaseProcessor(ABC):
     def __init__(self):
@@ -11,7 +11,7 @@ class BaseProcessor(ABC):
         Add a function operation to the list of operations.
         Automatically wraps the function into the ApplyFunction class.
         """
-        self.operations.append(ApplyFunction(func))
+        self.operations.append(func)
 
     @abstractmethod
     def add_custom_operation(self, operation):

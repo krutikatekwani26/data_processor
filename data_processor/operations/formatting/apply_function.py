@@ -1,5 +1,7 @@
 from data_processor.core.operation import Operation
 from ...core.dataset import Dataset
+from ...utils.helpers import requires_schema
+
 
 class ApplyFunction(Operation):
     """
@@ -14,12 +16,13 @@ class ApplyFunction(Operation):
         data = dataset.get_data()
         schema = dataset.get_schema()
 
-        try:
+        # Check if the function has the `requires_schema` attribute
+        if hasattr(self.func, 'requires_schema') and self.func.requires_schema:
+            # If the function requires schema, pass both data and schema
             data = self.func(data, schema)
-        except TypeError:
-            data = self.func(data)  
+        else:
+            # If the function does not require schema, pass only data
+            data = self.func(data)
             
-        dataset.set_data(data)      
+        dataset.set_data(data)
         return dataset
-    
-    
