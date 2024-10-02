@@ -53,3 +53,5 @@ class ExceptionHandler:
             print(f"ImportError: Failed to import a required module.")
         else:
             print(f"Unexpected error in '{operation_name}': {str(error)}")
+
+        raise error

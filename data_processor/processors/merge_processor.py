@@ -10,7 +10,7 @@ class MergeProcessor(BaseProcessor):
         super().__init__()
         self.exception_handler = ExceptionHandler()
 
-    
+    @operation_type_check('merge')
     def add_operation(self, operation, **kwargs):
         
         wrapped_operation = ApplyMerge(operation, **kwargs)
@@ -28,6 +28,8 @@ class MergeProcessor(BaseProcessor):
             
             df1 = dataset1.get_data()
             df2 = dataset2.get_data()
+
+            
 
             # Apply each operation in the operations list
             for operation in self.operations:
@@ -52,4 +54,4 @@ class MergeProcessor(BaseProcessor):
         """
         Get the list of available merge operations.
         """
-        return get_operation_list('merging')
+        return get_operation_list('merge')

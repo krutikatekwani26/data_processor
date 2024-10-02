@@ -31,6 +31,18 @@ def mark_as_validation_operation(func):
     wrapper._is_validation_operation = True
     return wrapper
 
+def mark_as_merge_operation(func):
+    """
+    Decorator to mark a function as a merge operation.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    
+    # Mark the function as a merge operation
+    wrapper._is_merge_operation = True
+    return wrapper
+
 class SchemaNotProvidedError(Exception):
     pass
 
@@ -46,9 +58,9 @@ def requires_schema(func):
 
 def operation_type_check(operation_type):
     """
-    Decorator to ensure the operation being added has been marked with the correct type (cleaning or validation).
+    Decorator to ensure the operation being added has been marked with the correct type (cleaning or validation or merge).
     
-    :param operation_type: A string representing the type of operation ('cleaning' or 'validation').
+    :param operation_type: A string representing the type of operation ('cleaning' or 'validation' or 'merge').
     """
     def decorator(func):
         @wraps(func)
@@ -312,15 +324,14 @@ def read_yaml(path_to_yaml: str) -> ConfigBox:
     
 def get_operation_list(operation_type: str) -> List[str]:
     
-    attr = {'cleaning': '_is_cleaning_operation', 'validation': '_is_validation_operation'}.get(operation_type)
+    attr = {'cleaning': '_is_cleaning_operation', 'validation': '_is_validation_operation','merge': '_is_merge_operation' }.get(operation_type)
     
     if not attr:
-        raise ValueError("Invalid operation type. Use 'cleaning' or 'validation'.")
+        raise ValueError("Invalid operation type. Use 'cleaning' or 'validation' or 'merge'.")
     
     return [name for name, obj in inspect.getmembers(sys.modules[__name__]) 
             if inspect.isfunction(obj) and getattr(obj, attr, False)]
     
-
 
 
 def check_no_duplicates(df: pd.DataFrame, subset_columns: list = None) -> bool:
@@ -332,10 +343,16 @@ def check_no_duplicates(df: pd.DataFrame, subset_columns: list = None) -> bool:
     :return: True if no duplicates found, raises ValueError otherwise.
     """
     duplicates = df.duplicated(subset=subset_columns)
+    
+    # If duplicates are found, print them for debugging
     if duplicates.any():
+        print("Duplicate rows found:")
+        print(df[duplicates])
         raise ValueError(f"DataFrame contains duplicate rows based on columns: {subset_columns if subset_columns else 'all columns'}")
+    
     return True
 
+@mark_as_merge_operation
 def merge_dfs(df1: pd.DataFrame, df2: pd.DataFrame, merge_columns=None, how="outer") -> pd.DataFrame:
     """
     Merge two DataFrames based on the given columns and merge strategy.
@@ -354,7 +371,7 @@ def merge_dfs(df1: pd.DataFrame, df2: pd.DataFrame, merge_columns=None, how="out
 
     return merged_df
 
-
+@mark_as_merge_operation
 def add_new_rows(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     """
     Add rows from df2 into df1. If row exists in df1, it's ignored.
@@ -363,6 +380,15 @@ def add_new_rows(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     :param df2: DataFrame containing new rows.
     :return: DataFrame with new rows added from df2.
     """
+
+    # Check that both DataFrames have the same column names
+    if not df1.columns.equals(df2.columns):
+        raise ValueError(f"DataFrames have different columns. "
+                         f"df1 columns: {df1.columns.tolist()}, df2 columns: {df2.columns.tolist()}")
+
+    df1 = remove_duplicates(df1)
+    df2 = remove_duplicates(df2)
+    
     combined_df = pd.concat([df1, df2]).drop_duplicates(subset=df1.columns.tolist(), keep='first')
     
     # Reset the index 
