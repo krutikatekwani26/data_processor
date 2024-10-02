@@ -33,6 +33,13 @@ def mark_as_validation_operation(func):
 
 class SchemaNotProvidedError(Exception):
     pass
+
+def requires_schema(func):
+    """
+    Decorator to mark functions that require the schema as an argument.
+    """
+    func.requires_schema = True
+    return func
     
 
 
@@ -85,7 +92,27 @@ def make_uppercase( dataframe: pd.DataFrame) -> pd.DataFrame:
         return _df
 
 
+@mark_as_cleaning_operation
+def strip_leading_and_trailing_spaces( dataframe: pd.DataFrame) -> pd.DataFrame:
+        """
+        Apply the transformation to strip spaces from column names and string values.
+        
+        :param dataframe: Input DataFrame to strip spaces from.
+        :param schema: Not used for this operation, included for compatibility.
+        :return: A DataFrame with stripped column names and values.
+        """
 
+        # Create a copy of the input DataFrame to avoid modifying the original
+        _df = dataframe.copy()
+
+        # Strip spaces from column names
+        _df.columns = _df.columns.str.strip()
+
+        # Strip spaces from string data in all categorical/object columns
+        for col in _df.select_dtypes(include=['object']).columns:
+            _df[col] = _df[col].apply(lambda x: x.strip() if isinstance(x, str) else x)
+
+        return _df
 
 @mark_as_cleaning_operation
 def remove_spaces_Around_punctuation(dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -117,6 +144,7 @@ def remove_spaces_Around_punctuation(dataframe: pd.DataFrame) -> pd.DataFrame:
         return _df
 
 @mark_as_validation_operation
+@requires_schema
 def drop_invalid_columns(dataframe, schema):
         """
         Drops columns from the DataFrame that are not present in the schema.yaml file
@@ -190,12 +218,12 @@ def remove_duplicates(dataframe: pd.DataFrame, subset=None, keep='first') -> pd.
         # Extract the rows that will be dropped
         dropped_rows = dataframe[duplicate_mask]
         
-        # Print the rows that are being dropped
-        if not dropped_rows.empty:
-            print(f"The following duplicate rows were dropped:\n{dropped_rows}\n")
+        
+        #if not dropped_rows.empty:
+        #    print(f"The following duplicate rows were dropped:\n{dropped_rows}\n")
         
         
-        # Remove duplicates using Pandas' drop_duplicates function
+        
         return dataframe.drop_duplicates(subset=subset, keep=keep)
 
 
@@ -206,6 +234,7 @@ def remove_duplicates(dataframe: pd.DataFrame, subset=None, keep='first') -> pd.
 
 
 @mark_as_validation_operation
+@requires_schema
 def validate_column_values( dataframe: pd.DataFrame, schema: dict) -> pd.DataFrame:
         """
         Apply the validation to the DataFrame based on the provided schema.
@@ -294,4 +323,49 @@ def get_operation_list(operation_type: str) -> List[str]:
 
 
 
+def check_no_duplicates(df: pd.DataFrame, subset_columns: list = None) -> bool:
+    """
+    Check if the DataFrame has any duplicate rows.
+    
+    :param df: DataFrame to check for duplicates.
+    :param subset_columns: List of columns to consider for duplication check (optional).
+    :return: True if no duplicates found, raises ValueError otherwise.
+    """
+    duplicates = df.duplicated(subset=subset_columns)
+    if duplicates.any():
+        raise ValueError(f"DataFrame contains duplicate rows based on columns: {subset_columns if subset_columns else 'all columns'}")
+    return True
 
+def merge_dfs(df1: pd.DataFrame, df2: pd.DataFrame, merge_columns=None, how="outer") -> pd.DataFrame:
+    """
+    Merge two DataFrames based on the given columns and merge strategy.
+
+    :param df1: First DataFrame to merge.
+    :param df2: Second DataFrame to merge.
+    :param merge_columns: List of columns to merge on.
+    :param how: Type of merge - 'inner', 'outer', 'left', 'right'.
+    :return: Merged DataFrame.
+    """
+    if merge_columns is None:
+        raise ValueError("merge_columns must be provided")
+
+    # Perform the merge using the specified columns and strategy
+    merged_df = pd.merge(df1, df2, on=merge_columns, how=how)
+
+    return merged_df
+
+
+def add_new_rows(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add rows from df2 into df1. If row exists in df1, it's ignored.
+
+    :param df1: Main DataFrame.
+    :param df2: DataFrame containing new rows.
+    :return: DataFrame with new rows added from df2.
+    """
+    combined_df = pd.concat([df1, df2]).drop_duplicates(subset=df1.columns.tolist(), keep='first')
+    
+    # Reset the index 
+    combined_df.reset_index(drop=True, inplace=True)
+    
+    return combined_df
