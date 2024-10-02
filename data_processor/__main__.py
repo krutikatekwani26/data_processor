@@ -11,12 +11,15 @@ warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 dataset_path = 'data_processor/supervison_data.xlsx'
 schema_path = 'data_processor/schema.yaml'
 dataset_path2 = 'data_processor/data2.xlsx'  
+dataset_path3 = 'data_processor/data3.xlsx'
 data = pd.read_excel(dataset_path)
 data2 = pd.read_excel(dataset_path2)
+data3 = pd.read_excel(dataset_path3)
 
 # Create Dataset objects
 dataset = Dataset(data, schema_path)
 dataset2 = Dataset(data2, schema_path)
+dataset3 = Dataset(data3, schema_path)
 
 # Instantiate processors
 cleaning_processor = DataCleaningProcessor()
@@ -45,8 +48,10 @@ merge_processor.add_operation(add_new_rows)
 # Process cleaning
 cleaning_processor.process(dataset)
 cleaning_processor.process(dataset2)
+cleaning_processor.process(dataset3)
 print(dataset.get_data().shape)
 print(dataset2.get_data().shape)
+print(dataset3.get_data().shape)
 
 
 
@@ -54,10 +59,11 @@ print(dataset2.get_data().shape)
 # Process validation
 validation_processor.process(dataset)
 validation_processor.process(dataset2)
+validation_processor.process(dataset3)
 #validated_dataset.get_data().to_csv("data_processor/midcheck_data.csv", index=False)
 
 # Merge the datasets
-merged_data = merge_processor.process(dataset, dataset2)
+merged_data = merge_processor.process(dataset, dataset2,dataset3)
 
 # Print the merged data
 
