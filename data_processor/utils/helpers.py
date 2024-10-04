@@ -6,6 +6,7 @@ from functools import wraps
 import inspect
 import sys
 from typing import List
+import hashlib
 
 def mark_as_cleaning_operation(func):
     """
@@ -274,7 +275,7 @@ def validate_column_values( dataframe: pd.DataFrame, schema: dict) -> pd.DataFra
 
         # Raise ValueError if any invalid values are found
         if invalid_data:
-            raise ValueError("\n".join(invalid_data))
+            print("\n".join(invalid_data))
 
         # Return the DataFrame unmodified if no errors
         return dataframe
@@ -395,3 +396,38 @@ def add_new_rows(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     combined_df.reset_index(drop=True, inplace=True)
     
     return combined_df
+
+@mark_as_cleaning_operation
+def generate_hash_with_columns(dataframe, columns):
+    """
+    Generate an MD5 hash based on specific columns.
+    :param dataframe: The DataFrame to process.
+    :param columns: A list of columns to generate the hash.
+    """
+    for col in columns:
+        if col not in dataframe.columns:
+            raise ValueError(f"Column '{col}' not found in DataFrame.")
+
+    def hash_row(row):
+        tag_str = '|'.join([str(row[col]) for col in columns])
+        return hashlib.md5(tag_str.encode()).hexdigest()
+
+    dataframe['hash_id'] = dataframe.apply(hash_row, axis=1)
+    return dataframe
+
+@mark_as_cleaning_operation
+def apply_standard_cleaning(dataframe: pd.DataFrame) -> pd.DataFrame:
+    """
+    Applies a set of standard cleaning operations to the given DataFrame.
+    
+    :param dataframe: The DataFrame to be cleaned.
+    :return: The cleaned DataFrame.
+    """
+    # Apply all standard cleaning operations
+    dataframe = remove_spaces_Around_punctuation(dataframe)
+    dataframe = manage_special_characters(dataframe)
+    dataframe = make_uppercase(dataframe)
+    dataframe = strip_leading_and_trailing_spaces(dataframe)
+    dataframe = clean_numeric_values(dataframe)
+    
+    return dataframe

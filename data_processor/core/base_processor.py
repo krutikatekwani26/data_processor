@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from data_processor.core.dataset import Dataset
 
-
 class BaseProcessor(ABC):
     def __init__(self):
         self.operations = []
