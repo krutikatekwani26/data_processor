@@ -20,38 +20,35 @@ class MergeProcessor(BaseProcessor):
             raise ValueError("Custom operation must be a callable function that takes two DataFrames.")
         super().add_operation(operation) 
 
-    def process(self, *datasets: Dataset) -> Dataset:
+    def process(self, *dataset_stream: Dataset) -> Dataset:
         """
         Process multiple datasets by merging them sequentially.
         :param datasets: List of Dataset objects to be merged.
         :return: The final merged Dataset.
         """
         try:
-            if len(datasets) < 2:
+            if len(dataset_stream) < 2:
                 raise ValueError("At least two datasets are required for merging.")
             
             # Take the first dataset as the base
-            dataset1 = datasets[0]
-            
-            for dataset2 in datasets[1:]:
-                df1 = dataset1.get_data()
-                df2 = dataset2.get_data()
-
+            main_obj = dataset_stream[0]
+            for collection_obj in dataset_stream[1:]:
+                
                 # Apply each operation in the operations list
                 for operation in self.operations:
                     try:
                         if isinstance(operation, ApplyMerge):
-                            dataset1 = operation.apply(dataset1, dataset2)
+                            main_obj = operation.apply(main_obj, collection_obj)
                         else:
-                            df1 = operation(df1, df2)
-                            dataset1.set_data(df1)
+                            main_obj_pandas = operation(main_obj.get_data(),collection_obj.get_data())
+                            main_obj.set_data(main_obj_pandas)
                     except Exception as error:
                         self.exception_handler.handle(operation, error)
 
         except Exception as error:
             self.exception_handler.handle(self.process, error)
 
-        return dataset1
+        return main_obj
 
     def get_operation_list(self):
         """

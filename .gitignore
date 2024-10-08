@@ -1,5 +1,6 @@
 # Ignore Excel files
 data_processor/*.xlsx
+data_processor/input_excel_files/*.xlsx
 
 # Ignore schema.yaml
 data_processor/*.yaml
@@ -14,9 +15,16 @@ data_processor/operations/merging/__pycache__/
 data_processor/test/__pycache__/
 
 data_processor/*.csv
+data_processor/input_excel_files/*.csv
+data_processor/output excel files/*.csv
+
 data_processor/tests/__pycache__/test_helper.cpython-311-pytest-7.4.4.pyc
 data_processor/tests/__pycache__/test_data_validation_processor.cpython-311-pytest-7.4.4.pyc
 data_processor/tests/__pycache__/test_data_cleaning_processor.cpython-311-pytest-7.4.4.pyc
 data_processor/tests/__pycache__/__init__.cpython-311.pyc
 data_processor/union_decision.xlsm
 data_processor/rh_union_decision.xlsm
+data_processor/input_excel_files/trial_collection_sheet.xlsm
+data_processor/input_excel_files/trial_main_sheet.xlsm
+
+
