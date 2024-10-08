@@ -194,7 +194,8 @@ def handle_override( main_df: pd.DataFrame, override_df: pd.DataFrame):
         :param sheet_name: Name of the collection sheet being processed.
         :return: DataFrame with overrides applied.
         """
-        
+        override_df = filter_same_rows(main_df, override_df)
+
         # Get the set of hash_ids in the override DataFrame
         override_tags = set(override_df["HASH ID"])
         print(f"Number of override tags: {len(override_tags)}")
@@ -210,7 +211,7 @@ def handle_override( main_df: pd.DataFrame, override_df: pd.DataFrame):
         # Append the override rows to merged_df
         main_df = pd.concat([main_df, override_df], ignore_index=True)
         
-        return main_df
+        return main_df.drop(['COMBINED_HASH'], axis=1)
 
 def replace_unconfirmed(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -238,3 +239,51 @@ def replace_unconfirmed(df: pd.DataFrame) -> pd.DataFrame:
     df = df.drop(unconfirmed_rows_to_drop.index)
 
     return df
+
+def filter_same_rows(merged_df: pd.DataFrame, override_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Filters out rows from the override DataFrame that are exactly the same as those in the merged DataFrame.
+    This is determined by comparing a combined hash of the 'hash_id' and the integer parts of 'BASE' and 'FRINGE'.
+
+    :param merged_df: The merged DataFrame.
+    :param override_df: The override DataFrame containing rows to be merged into the merged DataFrame.
+    :return: The filtered override DataFrame with rows that are not present in the merged DataFrame.
+    """
+    # Generate a combined hash for each row in merged_df by concatenating 'hash_id' and base_fringe_hash
+    merged_df['COMBINED_HASH'] = merged_df['HASH ID'] + merged_df.apply(_generate_base_fringe_hash, axis=1)
+
+    # Generate a combined hash for each row in override_df by concatenating 'hash_id' and base_fringe_hash
+    override_df['COMBINED_HASH'] = override_df['HASH ID'] + override_df.apply(_generate_base_fringe_hash, axis=1)
+
+    # Filter out rows in override_df that are exactly the same as those in merged_df
+    filtered_override_df = override_df[~override_df['COMBINED_HASH'].isin(merged_df['COMBINED_HASH'])].copy()
+
+    # Ensure we are working with a copy when dropping columns
+    merged_df = merged_df.copy()
+    filtered_override_df = filtered_override_df.copy()
+
+    # Drop the COMBINED_HASH column from both DataFrames
+    merged_df.drop(columns=['COMBINED_HASH'], inplace=True)
+    filtered_override_df.drop(columns=['COMBINED_HASH'], inplace=True)
+    override_df.drop(columns=['COMBINED_HASH'], inplace=True)
+
+    return filtered_override_df
+
+def _generate_base_fringe_hash(row: pd.Series) -> str:
+    """
+    Generates a hash for a given row based on the integer parts of 'BASE' and 'FRINGE' columns.
+    This method ensures that rows with similar 'BASE' and 'FRINGE' values (when rounded to integers)
+    generate the same hash, allowing for comparisons even if the exact values differ slightly.
+
+    :param row: The row of the DataFrame.
+    :return: A hash string representing the integer parts of 'BASE' and 'FRINGE'.
+    """
+    # Convert 'BASE' and 'FRINGE' to their integer parts
+    base_int = int(row['BASE'])
+    fringe_int = int(row['FRINGE'])
+
+    # Create a string combining the integer parts of 'BASE' and 'FRINGE'
+    row_str = f"{base_int}|{fringe_int}"
+
+    # Generate and return the MD5 hash of the combined string
+    return hashlib.md5(row_str.encode()).hexdigest()

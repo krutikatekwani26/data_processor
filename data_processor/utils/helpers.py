@@ -223,13 +223,13 @@ def clean_numeric_values( dataframe: pd.DataFrame) -> pd.DataFrame:
         return _df
 
 @mark_as_cleaning_operation    
-def remove_duplicates(dataframe: pd.DataFrame, subset=None, keep='first') -> pd.DataFrame:
+def remove_duplicates(dataframe: pd.DataFrame, keep='first') -> pd.DataFrame:
         
         # Identify duplicates
-        duplicate_mask = dataframe.duplicated(subset=subset, keep=keep)
+        #duplicate_mask = dataframe.duplicated(subset=subset, keep=keep)
         
         # Extract the rows that will be dropped
-        dropped_rows = dataframe[duplicate_mask]
+        #dropped_rows = dataframe[duplicate_mask]
         
         
         #if not dropped_rows.empty:
@@ -237,7 +237,7 @@ def remove_duplicates(dataframe: pd.DataFrame, subset=None, keep='first') -> pd.
         
         
         
-        return dataframe.drop_duplicates(subset=subset, keep=keep)
+        return dataframe.drop_duplicates(keep = keep)
 
 
 
@@ -382,11 +382,14 @@ def add_new_rows(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     :return: DataFrame with new rows added from df2.
     """
 
-    # Check that both DataFrames have the same column names
-    if not df1.columns.equals(df2.columns):
+    # Check that both DataFrames have the same column names (ignoring order)
+    if set(df1.columns) != set(df2.columns):
         raise ValueError(f"DataFrames have different columns. "
                          f"df1 columns: {df1.columns.tolist()}, df2 columns: {df2.columns.tolist()}")
-
+    
+    # Reorder df2 columns to match df1 columns
+    df2 = df2[df1.columns]
+    
     df1 = remove_duplicates(df1)
     df2 = remove_duplicates(df2)
     
@@ -397,23 +400,7 @@ def add_new_rows(df1: pd.DataFrame, df2: pd.DataFrame) -> pd.DataFrame:
     
     return combined_df
 
-@mark_as_cleaning_operation
-def generate_hash_with_columns(dataframe, columns):
-    """
-    Generate an MD5 hash based on specific columns.
-    :param dataframe: The DataFrame to process.
-    :param columns: A list of columns to generate the hash.
-    """
-    for col in columns:
-        if col not in dataframe.columns:
-            raise ValueError(f"Column '{col}' not found in DataFrame.")
 
-    def hash_row(row):
-        tag_str = '|'.join([str(row[col]) for col in columns])
-        return hashlib.md5(tag_str.encode()).hexdigest()
-
-    dataframe['hash_id'] = dataframe.apply(hash_row, axis=1)
-    return dataframe
 
 @mark_as_cleaning_operation
 def apply_standard_cleaning(dataframe: pd.DataFrame) -> pd.DataFrame:
@@ -424,9 +411,9 @@ def apply_standard_cleaning(dataframe: pd.DataFrame) -> pd.DataFrame:
     :return: The cleaned DataFrame.
     """
     # Apply all standard cleaning operations
+    dataframe = make_uppercase(dataframe)
     dataframe = remove_spaces_Around_punctuation(dataframe)
     dataframe = manage_special_characters(dataframe)
-    dataframe = make_uppercase(dataframe)
     dataframe = strip_leading_and_trailing_spaces(dataframe)
     dataframe = clean_numeric_values(dataframe)
     

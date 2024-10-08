@@ -1,11 +1,11 @@
 # Ignore Excel files
-data_processor\supervison_data.xlsx
+data_processor\*.xlsx
 
 # Ignore schema.yaml
-data_processor\schema.yaml
+data_processor\*.yaml
 
 # Ignore CSV files
-data_processor\check_data.csv
+data_processor\*.csv
 
 
 
