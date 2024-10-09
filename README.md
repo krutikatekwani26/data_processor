@@ -16,22 +16,27 @@ data_processor/
 ├── operations/
 │   ├── formatting/
 │   │   ├── __init__.py
-│   │   ├── apply_formatting.py  # Subclass of operation for formatting
+│   │   ├── apply_formatting.py  
 │
 ├── merging/
-│   ├── __init__.py             # Handles merging operations
+│   ├── __init__.py   
+|   |--apply_merge.py          
 │
 ├── processors/
-│   ├── DataCleaningProcessor.py         # Subclass of base_processor
+│   ├── DataCleaningProcessor.py         
 |   |-- DataValidationProcessor.py
+|   |-- MergeProcessor.py
 │   ├── __init__.py
 │
 ├── utils/
 │   ├── __init__.py
 │   ├── helper.py
-|   |-- exceptions.py
+|   |-- exception_handler.py
 |
 |-- Tests/-
-|   |-- util_tests.py
-|   |-- processor_tests.py
-|        
+|   |-- test_helper.py
+|   |-- test_data_cleaning_processor.py
+|   |-- test_data_validaton_processor.py
+|   |--__init__.py
+|
+       
