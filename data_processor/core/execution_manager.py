@@ -6,6 +6,10 @@ from ..utils.helpers import check_operation_type
 class ExecutionManager:
     global_operations = []  # Class-level storage for operations
 
+
+    def __init__(self):
+        pass
+
     @classmethod
     def add_operation(cls, order: int, processor, operation, datasets: list):
         # Check operation type based on processor type
