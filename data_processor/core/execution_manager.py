@@ -12,6 +12,9 @@ class ExecutionManager:
 
     @classmethod
     def add_operation(cls, order: int, processor, operation, datasets: list):
+        print(
+            f'Registered using {cls.__name__}'
+        )
         # Check operation type based on processor type
         if isinstance(processor, DataCleaningProcessor):
             check_operation_type(operation, 'cleaning')
@@ -36,6 +39,9 @@ class ExecutionManager:
 
         # Loop through each operation in order and execute it
         for _, processor, operation, datasets in cls.global_operations:
+
+            print(
+                f'working on {processor.__class__.__name__}'
             # Check if processor is MergeProcessor
             if isinstance(processor, MergeProcessor):
                 if len(datasets) < 2:
