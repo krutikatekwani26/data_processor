@@ -7,6 +7,7 @@ from data_processor.processors.merge_processor import MergeProcessor
 from data_processor.utils.helpers import *
 import warnings
 from .user_custom_methods import *
+from .core.execution_manager import ExecutionManager
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
 # Load dataset and schema
@@ -35,65 +36,30 @@ dataset4 = Dataset(data3,schema_path)
 
 # Instantiate processors
 cleaning_processor = DataCleaningProcessor()
-cleaning_processor2 = DataCleaningProcessor()
-cleaning_processor3 = DataCleaningProcessor()
 validation_processor = DataValidationProcessor()
 merge_processor = MergeProcessor()
-merge_processor2 = MergeProcessor()
 
+# Create an execution manager
+execution_manager = ExecutionManager()
 
-# Add all operations
-cleaning_processor.add_operation(apply_standard_cleaning)
-cleaning_processor.add_custom_operation(convert_journeyman_to_journey)
+# Add operations to the ExecutionManager with global order
+execution_manager.add_operation(1, cleaning_processor, apply_standard_cleaning, [dataset, dataset2, dataset3, dataset4])
+execution_manager.add_operation(2, cleaning_processor, convert_journeyman_to_journey, [dataset, dataset2,dataset3,dataset4])
+execution_manager.add_operation(3, validation_processor, check_city, [dataset,dataset2,dataset3,dataset4])
+execution_manager.add_operation(4, validation_processor, drop_invalid_columns, [dataset,dataset2,dataset3,dataset4])
+execution_manager.add_operation(5, validation_processor, validate_column_values, [dataset,dataset2,dataset3,dataset4])
+execution_manager.add_operation(6, cleaning_processor, generate_hash, [dataset,dataset2,dataset3,dataset4])
+execution_manager.add_operation(7, cleaning_processor, keep_the_largest_dup, [dataset,dataset2,dataset3,dataset4])
+execution_manager.add_operation(8, merge_processor, handle_override, [dataset, dataset2])
+execution_manager.add_operation(9, merge_processor, add_new_rows, [dataset, dataset3,dataset4])
+execution_manager.add_operation(10, cleaning_processor, replace_unconfirmed, [dataset])
+execution_manager.add_operation(11, cleaning_processor, keep_the_largest_dup, [dataset])
 
-validation_processor.add_custom_operation(check_city)
-validation_processor.add_operation(drop_invalid_columns)
-validation_processor.add_operation(validate_column_values)
+# Execute all operations in order
+execution_manager.execute()
 
-
-cleaning_processor2.add_custom_operation(generate_hash)
-cleaning_processor2.add_custom_operation(keep_the_largest_dup)
-
-merge_processor.add_custom_operation(handle_override)
-merge_processor2.add_operation(add_new_rows)
-
-cleaning_processor3.add_custom_operation(replace_unconfirmed)
-cleaning_processor3.add_custom_operation(keep_the_largest_dup)
-
-
-
-cleaning_processor.process(dataset, dataset2,dataset3,dataset4)
-validation_processor.process(dataset)
-validation_processor.process(dataset2)
-validation_processor.process(dataset3)
-validation_processor.process(dataset4)
-print(f"after initial cleaning and validation {dataset.get_data().shape[0]}")
-print(dataset2.get_data().shape[0])
-print(dataset3.get_data().shape[0])
-print(dataset4.get_data().shape[0])
-
-cleaning_processor2.process(dataset,dataset2,dataset3,dataset4)
-dataset2.get_data().to_csv("data_processor\output excel files\checking_override_hash.csv", index=False)
-print(f"after initial keep largest duplicate {dataset.get_data().shape[0]}")
-print(dataset2.get_data().shape[0])
-print(dataset3.get_data().shape[0])
-print(dataset4.get_data().shape[0])
-
-
-merge_processor.process(dataset, dataset2)
-merge_processor2.process(dataset,dataset3,dataset4)
-
-cleaning_processor3.process(dataset)
-
-
-#final confirmatory tests
-assert not dataset.get_data()['HASH ID'].duplicated().any(), "Duplicate hash IDs found!"
-
-# Drop the 'HASH ID' column
-#dataset.set_data(dataset.get_data().drop('HASH ID', axis=1))
-print(f"final count for main {dataset.get_data().shape[0]}")
-
-dataset.get_data().to_csv("data_processor\output excel files\check_data2.csv", index=False)
+print(dataset.get_data().shape)
+print(dataset.get_data().head())
 
 
 

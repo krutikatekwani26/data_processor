@@ -18,30 +18,23 @@ class DataValidationProcessor(BaseProcessor):
     def add_custom_operation(self, operation):
         return super().add_custom_operation(operation)
 
-    def process(self, dataset: Dataset) -> Dataset:
+    def process_operation(self, operation, dataset: Dataset):
         """
-        Process the dataset by applying all validation operations sequentially.
-        Apply validation based on a provided schema.
+        Process a single validation operation on a dataset with the schema.
         """
-
-        if dataset.get_schema() is None:
-            raise SchemaNotProvidedError("Schema required to validate the data against. Please provide a schema.")
-        
-        # Apply each validation operation in sequence
-        for operation in self.operations:
-            try:
-                if isinstance(operation, ApplyFunction):
-                    # Apply built-in validation operations
-                    dataset = operation.apply(dataset)
-                else:
-                    # Apply custom validation operations
-                    df = dataset.get_data()
-                    schema = dataset.get_schema()
-                    df = operation(df, schema)
-                    dataset.set_data(df)
-            except Exception as error:
-                
-                self.exception_handler.handle(operation, error)
+        try:
+            if dataset.get_schema() is None:
+                raise SchemaNotProvidedError("Schema required to validate the data.")
+            
+            if isinstance(operation, ApplyFunction):
+                dataset = operation.apply(dataset)
+            else:
+                df = dataset.get_data()
+                schema = dataset.get_schema()
+                df = operation(df, schema)
+                dataset.set_data(df)
+        except Exception as error:
+            self.exception_handler.handle(operation, error)
 
         return dataset
 

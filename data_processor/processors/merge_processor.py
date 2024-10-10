@@ -20,30 +20,25 @@ class MergeProcessor(BaseProcessor):
             raise ValueError("Custom operation must be a callable function that takes two DataFrames.")
         super().add_operation(operation) 
 
-    def process(self, *dataset_stream: Dataset) -> Dataset:
+    def process_operation(self, operation, *dataset_stream: Dataset):
         """
-        Process multiple datasets by merging them sequentially.
-        :param datasets: List of Dataset objects to be merged.
-        :return: The final merged Dataset.
+        Process a single merge operation on two datasets.
         """
         try:
-            if len(dataset_stream) < 2:
-                raise ValueError("At least two datasets are required for merging.")
+            
             
             # Take the first dataset as the base
             main_obj = dataset_stream[0]
             for collection_obj in dataset_stream[1:]:
                 
-                # Apply each operation in the operations list
-                for operation in self.operations:
-                    try:
-                        if isinstance(operation, ApplyMerge):
-                            main_obj = operation.apply(main_obj, collection_obj)
-                        else:
-                            main_obj_pandas = operation(main_obj.get_data(),collection_obj.get_data())
-                            main_obj.set_data(main_obj_pandas)
-                    except Exception as error:
-                        self.exception_handler.handle(operation, error)
+                
+                   
+                if isinstance(operation, ApplyMerge):
+                    main_obj = operation.apply(main_obj, collection_obj)
+                else:
+                    main_obj_pandas = operation(main_obj.get_data(),collection_obj.get_data())
+                    main_obj.set_data(main_obj_pandas)
+        
 
         except Exception as error:
             self.exception_handler.handle(self.process, error)

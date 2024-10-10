@@ -21,7 +21,7 @@ class BaseProcessor(ABC):
         self.operations.append(operation)
 
     @abstractmethod
-    def process(self, dataset: Dataset) -> Dataset:
+    def process_operation(self, operation, dataset: Dataset):
         """
         Process the dataset by applying all operations sequentially.
         This method must be implemented by subclasses.

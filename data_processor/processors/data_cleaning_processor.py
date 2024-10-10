@@ -21,29 +21,22 @@ class DataCleaningProcessor(BaseProcessor):
     def add_custom_operation(self, operation):
         return super().add_custom_operation(operation)
 
-    def process(self, *datasets: Dataset) -> list[Dataset]:
+    def process_operation(self, operation, dataset: Dataset):
         """
-        Process one or more datasets by applying all operations sequentially.
-        Accepts multiple datasets and returns the processed datasets.
+        Process a single cleaning operation on a dataset.
         """
-        processed_datasets = []
+        try:
+            if isinstance(operation, ApplyFunction):
+                dataset = operation.apply(dataset)
+            else:
+                # If not an ApplyFunction, process DataFrame directly
+                df = dataset.get_data()
+                df = operation(df)
+                dataset.set_data(df)
+        except Exception as error:
+            self.exception_handler.handle(operation, error)
         
-        for dataset in datasets:
-            for operation in self.operations:
-                try:
-                    if isinstance(operation, ApplyFunction):
-                        dataset = operation.apply(dataset)
-                    else:
-                        # If not an ApplyFunction, process DataFrame directly
-                        df = dataset.get_data()
-                        df = operation(df)
-                        dataset.set_data(df)
-                except Exception as error:
-                    self.exception_handler.handle(operation, error)
-
-            processed_datasets.append(dataset)
-        
-        return processed_datasets
+        return dataset
 
     def get_operation_list(self):
         return get_operation_list('cleaning')
