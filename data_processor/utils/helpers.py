@@ -54,28 +54,20 @@ def requires_schema(func):
     func.requires_schema = True
     return func
     
+def check_operation_type( operation, operation_type: str):
+        """
+        Helper method to check if the operation matches the processor type.
+        """
+        expected_attr = f"_is_{operation_type}_operation"
+        if not getattr(operation, expected_attr, False):
+            operation_name = operation.__name__  # Get the operation name
+            raise TypeError(
+                f"The operation '{operation_name}' is not of type {operation_type}. "
+                f"Try other processors or adding it as a custom operation."
+            )
 
 
 
-def operation_type_check(operation_type):
-    """
-    Decorator to ensure the operation being added has been marked with the correct type (cleaning or validation or merge).
-    
-    :param operation_type: A string representing the type of operation ('cleaning' or 'validation' or 'merge').
-    """
-    def decorator(func):
-        @wraps(func)
-        def wrapper(self, operation):
-            # Build the attribute name dynamically
-            expected_attr = f"_is_{operation_type}_operation"
-            
-            # Check if the operation has the expected attribute
-            if not getattr(operation, expected_attr, False):
-                raise TypeError(f"Operation must be of type {operation_type}.")
-            
-            return func(self, operation)
-        return wrapper
-    return decorator
 
 
 @mark_as_cleaning_operation

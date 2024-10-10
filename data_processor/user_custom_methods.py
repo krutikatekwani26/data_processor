@@ -52,7 +52,7 @@ def find_nearest_valid_city(invalid_city):
     :return: The name of the nearest valid city in the same state, or an error message if not found.
     """
     # Load the schema file containing city coordinates
-    city_data = read_yaml('data_processor\city_coordinates.yaml')
+    city_data = read_yaml('data_processor\input_files\city_coordinates.yaml')
 
     # Get coordinates for the invalid city
     invalid_city_data = get_city_coordinates(invalid_city)
