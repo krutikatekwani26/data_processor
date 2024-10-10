@@ -1,17 +1,14 @@
-# execution_manager.py
-from..processors.merge_processor import MergeProcessor
+from ..processors.merge_processor import MergeProcessor
 from ..processors.data_cleaning_processor import DataCleaningProcessor
 from ..processors.data_validation_processor import DataValidationProcessor
 from ..utils.helpers import check_operation_type
 
 class ExecutionManager:
-    def __init__(self):
-        # Store all operations with a global order
-        self.global_operations = []
+    global_operations = []  # Class-level storage for operations
 
-    def add_operation(self, order: int, processor, operation, datasets: list):
-        
-       # Check operation type based on processor type
+    @classmethod
+    def add_operation(cls, order: int, processor, operation, datasets: list):
+        # Check operation type based on processor type
         if isinstance(processor, DataCleaningProcessor):
             check_operation_type(operation, 'cleaning')
         elif isinstance(processor, DataValidationProcessor):
@@ -19,20 +16,22 @@ class ExecutionManager:
         elif isinstance(processor, MergeProcessor):
             check_operation_type(operation, 'merge')
 
-        self.global_operations.append((order, processor, operation, datasets))
+        cls.global_operations.append((order, processor, operation, datasets))
 
-    def add_custom_operation(self, order: int, processor, operation, datasets: list):
-        self.global_operations.append((order, processor, operation, datasets))
+    @classmethod
+    def add_custom_operation(cls, order: int, processor, operation, datasets: list):
+        cls.global_operations.append((order, processor, operation, datasets))
 
-    def execute(self):
+    @classmethod
+    def execute(cls):
         """
         Execute all operations based on the global order across processors.
         """
         # Sort operations by the specified order
-        self.global_operations.sort(key=lambda x: x[0])
+        cls.global_operations.sort(key=lambda x: x[0])
 
         # Loop through each operation in order and execute it
-        for _, processor, operation, datasets in self.global_operations:
+        for _, processor, operation, datasets in cls.global_operations:
             # Check if processor is MergeProcessor
             if isinstance(processor, MergeProcessor):
                 if len(datasets) < 2:
@@ -40,7 +39,6 @@ class ExecutionManager:
                 # For MergeProcessor, pass multiple datasets
                 processor.process_operation(operation, *datasets)
             else:
-                
                 # For other processors, process each dataset individually
                 for dataset in datasets:
                     processor.process_operation(operation, dataset)
