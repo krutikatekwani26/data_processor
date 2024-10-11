@@ -66,7 +66,19 @@ def check_operation_type( operation, operation_type: str):
                 f"Try other processors or adding it as a custom operation."
             )
 
+def validate_order(order):
+    """
+    Ensure that the order is a positive whole number (integer).
+    """
+    if not isinstance(order, int) or order <= 0:
+        raise ValueError(f"Order must be a positive whole number. Got {order}.")
 
+def check_duplicate_order(order, global_operations):
+    """
+    Helper method to check if the same order is already present in global_operations.
+    """
+    if order in [op[0] for op in global_operations]:
+        raise ValueError(f"Duplicate order {order} found. Please use a different order number.")
 
 
 

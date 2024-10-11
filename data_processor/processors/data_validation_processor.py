@@ -5,7 +5,7 @@ from ..utils.exception_handler import ExceptionHandler
 class DataValidationProcessor():
 
     def __init__(self):
-        super().__init__()
+        
         self.exception_handler = ExceptionHandler()  
 
     def process_operation(self, operation, dataset: Dataset):

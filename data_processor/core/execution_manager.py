@@ -1,20 +1,20 @@
 from ..processors.merge_processor import MergeProcessor
 from ..processors.data_cleaning_processor import DataCleaningProcessor
 from ..processors.data_validation_processor import DataValidationProcessor
-from ..utils.helpers import check_operation_type
+from ..utils.helpers import check_operation_type, validate_order, check_duplicate_order
 
 class ExecutionManager:
     global_operations = []  # Class-level storage for operations
-
 
     def __init__(self):
         pass
 
     @classmethod
     def add_operation(cls, order: int, processor, operation, datasets: list):
-        print(
-            f'Registered using {cls.__name__}'
-        )
+        # Validate order and check for duplicates using helper functions
+        validate_order(order)
+        check_duplicate_order(order, cls.global_operations)
+        
         # Check operation type based on processor type
         if isinstance(processor, DataCleaningProcessor):
             check_operation_type(operation, 'cleaning')
@@ -23,10 +23,16 @@ class ExecutionManager:
         elif isinstance(processor, MergeProcessor):
             check_operation_type(operation, 'merge')
 
+        # Add the operation to global operations
         cls.global_operations.append((order, processor, operation, datasets))
 
     @classmethod
     def add_custom_operation(cls, order: int, processor, operation, datasets: list):
+        # Validate order and check for duplicates using helper functions
+        validate_order(order)
+        check_duplicate_order(order, cls.global_operations)
+
+        # Add the custom operation to global operations
         cls.global_operations.append((order, processor, operation, datasets))
 
     @classmethod
@@ -40,8 +46,6 @@ class ExecutionManager:
         # Loop through each operation in order and execute it
         for _, processor, operation, datasets in cls.global_operations:
 
-            print(
-                f'working on {processor.__class__.__name__}'
             # Check if processor is MergeProcessor
             if isinstance(processor, MergeProcessor):
                 if len(datasets) < 2:
