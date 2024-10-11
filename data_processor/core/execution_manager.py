@@ -1,7 +1,7 @@
 from ..processors.merge_processor import MergeProcessor
 from ..processors.data_cleaning_processor import DataCleaningProcessor
 from ..processors.data_validation_processor import DataValidationProcessor
-from ..utils.helpers import check_operation_type, validate_order, check_duplicate_order
+from ..utils.helpers import check_operation_type, validate_order, check_duplicate_order, get_operation_list
 
 class ExecutionManager:
     global_operations = []  # Class-level storage for operations
@@ -32,6 +32,12 @@ class ExecutionManager:
         validate_order(order)
         check_duplicate_order(order, cls.global_operations)
 
+        # Check if the operation is a built-in operation
+        built_in_operations = get_operation_list('cleaning') + get_operation_list('validation') + get_operation_list('merge')
+        
+        if operation.__name__ in built_in_operations:
+            raise ValueError(f"The operation '{operation.__name__}' is a built-in operation and cannot be used in add_custom_operation. Use add_operation instead.")
+        
         # Add the custom operation to global operations
         cls.global_operations.append((order, processor, operation, datasets))
 
