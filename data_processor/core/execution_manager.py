@@ -51,7 +51,7 @@ class ExecutionManager:
 
         # Loop through each operation in order and execute it
         for _, processor, operation, datasets in cls.global_operations:
-
+            print(f"Executing '{operation.__name__}' on processor '{processor.__class__.__name__}'")
             # Check if processor is MergeProcessor
             if isinstance(processor, MergeProcessor):
                 if len(datasets) < 2:

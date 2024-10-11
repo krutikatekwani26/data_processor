@@ -23,8 +23,6 @@ class ExceptionHandler:
             print(f"EmptyDataError in '{operation_name}': No data found in the DataFrame.")
         elif isinstance(error, pd.errors.ParserError):
             print(f"ParserError in '{operation_name}': Error while parsing the DataFrame.")
-        elif isinstance(error, pd.errors.MultiIndexKeyError):
-            print(f"MultiIndexKeyError in '{operation_name}': Issue with accessing MultiIndex in DataFrame.")
         elif isinstance(error, pd.errors.IndexingError):
             print(f"IndexingError in '{operation_name}': Invalid indexing operation on DataFrame.")
         elif isinstance(error, pd.errors.MergeError):

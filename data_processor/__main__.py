@@ -20,7 +20,7 @@ data2 = pd.read_excel(dataset_path2)
 
 
 
-dataset = Dataset(data, schema_path)
+dataset = Dataset(data,schema_path)
 dataset2 = Dataset(data2, schema_path)
 
 print(f"before operations{dataset.get_data().shape}")
