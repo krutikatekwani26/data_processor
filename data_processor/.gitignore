@@ -5,6 +5,7 @@ data_processor/input_excel_files/*.xlsx
 # Ignore schema.yaml
 data_processor/*.yaml
 
+data_processor/__main__.py
 data_processor/__pycache__
 data_processor/core/__pycache__/ 
 data_processor/processors/__pycache__/
@@ -31,7 +32,7 @@ data_processor/rh_union_decision.xlsm
 
 
 
-data_processor/__main__.py
+__main__.py
 data_processor/__main__.py
 data_processor/main_for_supervision_data.py
 data_processor/main_for_trial_excel_files.py

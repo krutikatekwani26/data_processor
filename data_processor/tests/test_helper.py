@@ -1,16 +1,5 @@
 import pytest
-import pandas as pd
-from data_processor.utils.helpers import (
-    MakeUppercase, 
-    RemoveSpacesAroundPunctuation, 
-    ManageSpecialCharacters, 
-    StripLeadingAndTrailingSpaces, 
-    CleanNumericValues, 
-    RemoveDuplicates, 
-    DropInvalidColumns, 
-    ValidateColumnValues,
-    read_yaml,
-    )
+from utils.helper import *
     
 @pytest.fixture
 def dummy_data():
@@ -40,14 +29,14 @@ def schema():
 
 
 def test_make_uppercase(dummy_data):
-    processor = MakeUppercase()
+    processor = make_uppercase
     result = processor(dummy_data)
     expected = ['NAME', 'AMOUNT', 'PUNCTUATED_TEXT', 'HASH_ID']
     assert all(result.columns == expected)
     assert all(result['NAME'] == [' ALICE ', 'BOB ', 'CARLA ', ' ALICE'])
 
 def test_remove_spaces_around_punctuation(dummy_data):
-    processor = RemoveSpacesAroundPunctuation()
+    processor = remove_spaces_Around_punctuation
     result = processor(dummy_data)
     assert result['punctuated_text'][0] == 'Hello,World!'
     assert result['punctuated_text'][1] == 'Good:bye-'
@@ -56,7 +45,7 @@ def test_remove_spaces_around_punctuation(dummy_data):
 
 
 def test_manage_special_characters(dummy_data):
-    processor = ManageSpecialCharacters()
+    processor = manage_special_characters
     result = processor(dummy_data)
     assert result['punctuated_text'][0] == 'Hello-World-'
     assert result['punctuated_text'][1] == 'Good-bye-'
@@ -65,7 +54,7 @@ def test_manage_special_characters(dummy_data):
 
 
 def test_strip_leading_and_trailing_spaces(dummy_data):
-    processor = StripLeadingAndTrailingSpaces()
+    processor = strip_leading_and_trailing_spaces
     result = processor(dummy_data)
     assert result['name'][0] == 'Alice'
     assert result['name'][1] == 'Bob'
@@ -74,7 +63,7 @@ def test_strip_leading_and_trailing_spaces(dummy_data):
 
 
 def test_clean_numeric_values(dummy_data):
-    processor = CleanNumericValues()
+    processor = clean_numeric_values
     result = processor(dummy_data)
     assert result['amount'][0] == 500.0
     assert result['amount'][1] == 300.0
@@ -83,21 +72,21 @@ def test_clean_numeric_values(dummy_data):
 
 
 def test_remove_duplicates(dummy_data):
-    processor = RemoveDuplicates()
+    processor = remove_duplicates
     result = processor(dummy_data, subset=['hash_id'], keep='first')
     assert len(result) == 3
     assert result['hash_id'].tolist() == [1, 2, 4]
 
 
 def test_drop_invalid_columns(dummy_data, schema):
-    processor = DropInvalidColumns()
+    processor = drop_invalid_columns
     result = processor(dummy_data, schema)
     assert 'punctuated_text' in result.columns  
     assert 'hash_id' in result.columns          
 
 
 def test_validate_column_values(dummy_data, schema):
-    processor = ValidateColumnValues()
+    processor = validate_column_values
     # All valid values
     result = processor(dummy_data, schema)
     assert 'amount' in result.columns
