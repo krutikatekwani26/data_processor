@@ -5,6 +5,7 @@ data_processor/input_excel_files/*.xlsx
 # Ignore schema.yaml
 data_processor/*.yaml
 
+data_processor/__main__.py
 data_processor/__pycache__
 data_processor/core/__pycache__/ 
 data_processor/processors/__pycache__/
