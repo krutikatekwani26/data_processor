@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
-from ..processors.data_cleaning_processor import DataCleaningProcessor
-from ..core.dataset import Dataset
+from processors.data_cleaning_processor import DataCleaningProcessor
+from core.dataset import Dataset
 
 
 # Example operation to add a new column to the DataFrame

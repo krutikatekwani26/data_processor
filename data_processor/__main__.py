@@ -4,7 +4,7 @@ from data_processor.core.dataset import Dataset
 from data_processor.processors.data_cleaning_processor import DataCleaningProcessor
 from data_processor.processors.data_validation_processor import DataValidationProcessor
 from data_processor.processors.merge_processor import MergeProcessor
-from data_processor.utils.helpers import *
+from data_processor.utils.helper import *
 import warnings
 from .user_custom_methods import *
 from .core.execution_manager import ExecutionManager

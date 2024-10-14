@@ -30,6 +30,7 @@ setuptools.setup(
         "Bug Tracker": f"https://github.com/{AUTHOR_USER_NAME}/{REPO_NAME}/issues",
     },
     packages=setuptools.find_packages(exclude=['tests', '*.tests', '*.tests.*']),
+    include_package_data=True,
     install_requires=[
         "PyYAML==6.0.2",
         "pytest==7.4.4",

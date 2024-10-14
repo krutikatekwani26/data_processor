@@ -1,5 +1,5 @@
 import pandas as pd
-from ..utils.helpers import read_yaml
+from utils.helper import read_yaml
 
 
 class Dataset:

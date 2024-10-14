@@ -1,8 +1,8 @@
 import pytest
 import pandas as pd
-from ..processors.data_validation_processor import DataValidationProcessor
-from ..core.dataset import Dataset
-from ..utils.helpers import SchemaNotProvidedError
+from processors.data_validation_processor import DataValidationProcessor
+from core.dataset import Dataset
+from utils.helper import SchemaNotProvidedError
 
 
 # Example operation to check if a column exists in the DataFrame
