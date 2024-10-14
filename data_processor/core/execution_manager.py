@@ -1,6 +1,6 @@
-from data_processor.processors.merge_processor import MergeProcessor
-from data_processor.processors.data_cleaning_processor import DataCleaningProcessor
-from data_processor.processors.data_validation_processor import DataValidationProcessor
+from processors.merge_processor import MergeProcessor
+from processors.data_cleaning_processor import DataCleaningProcessor
+from processors.data_validation_processor import DataValidationProcessor
 from utils.helper import check_operation_type, validate_order, check_duplicate_order, get_operation_list
 
 class ExecutionManager:
